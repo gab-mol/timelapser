@@ -1,0 +1,8 @@
+__pycache__
+env_timelap
+timelapser_logs
+timelapser_records
+videos
+*.mkv
+*.log
+usar_timelapser.md
