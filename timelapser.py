@@ -1,9 +1,13 @@
+'''
+Captura fotografías con cámara web y las guarda como JPG.
+'''
 import cv2
 import time
 from datetime import datetime as dt
 import threading
 import os
 import logging
+from configparser import ConfigParser
 
 DIR = os.getcwd()
 START_DATE = dt.date((dt.now()))
@@ -72,7 +76,7 @@ class TimeLapse:
         '''
         # Intervalo en segundos entre fotos
         self.interval = interval
-        logger.info(f"intervalo: {interval}s")        
+        logger.info(f"intervalo: {interval}s | camara: {cam}")        
 
         # thread
         self.running = False
@@ -133,8 +137,11 @@ class TimeLapse:
 
 if __name__  == "__main__":
     # Parámetros del timelapse
-    photo_interval = 120 # segundos
-    camara = 1
+    cfg = ConfigParser()
+    cfg.read("timelap.cfg")
+    params = cfg["timelap_param"]
+    photo_interval = float(params["interval"])
+    camara = int(params["cam"])
 
     # Hilo principal
     timelapse = TimeLapse(photo_interval, cam=camara)
