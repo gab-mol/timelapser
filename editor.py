@@ -1,10 +1,16 @@
 '''
-Editar automaticamente video a partir de secuencia de capturas del timelapse.
+Editar automaticamente video (MP4) a partir de secuencia de capturas del timelapse.
+Pensado para tomar como argumento la ruta a la carpeta contenedora de las capturas
+que genera `timelapser.py`.
+
+Se ejecuta con comando:
+    blender -b -P editor.py
+
 '''
 import bpy
 import os
 from pprint import pprint
-
+from configparser import ConfigParser
 
 def main(img_dir, output_vid):
 
@@ -46,7 +52,7 @@ def main(img_dir, output_vid):
             frame_start=frame_start + index,
             fit_method='ORIGINAL'
         )
-        imstrip.frame_final_duration = 1  # Duración de cada fotograma
+        imstrip.frame_final_duration = 1
 
 
     # Configura las propiedades de renderizado
@@ -59,14 +65,11 @@ def main(img_dir, output_vid):
     scene.render.ffmpeg.ffmpeg_preset = 'GOOD'
     scene.render.fps = 2
 
-    # Configurar el rango de fotogramas
     scene.frame_start = 0
     scene.frame_end = len(image_files)
-
-    # Establecer la ruta de salida
     scene.render.filepath = output_vid
 
-    # Renderizar la animación
+    # Renderizar
     try:
         bpy.ops.render.render(animation=True)
         print(f"Video guardado en: {output_vid}")
@@ -74,9 +77,12 @@ def main(img_dir, output_vid):
         print(f"Error al renderizar el video: {str(e)}")
 
 if __name__   == "__main__":
-    # Directorio donde están las imágenes
-    DIR = os.getcwd()
-    img_dir = os.path.join(DIR, "timelapser_records", "start_2024-09-26", "start_15.11.55")
-    output_vid = os.path.join(DIR, "videos", f"render2024-09-26--start_15.11.55.mp4")
+    # Leer rutas desde `timelap.cfg``
+    cfg = ConfigParser()
+    cfg.read("timelap.cfg")
+    paths = cfg["editor"]
+
+    img_dir = paths["dir_imgs"]
+    output_vid = paths["path_vid"]
 
     main(img_dir, output_vid)
