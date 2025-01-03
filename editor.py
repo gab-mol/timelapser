@@ -12,7 +12,7 @@ import os
 from pprint import pprint
 from configparser import ConfigParser
 
-def main(img_dir, output_vid):
+def main(img_dir, output_vid, fps=2):
 
     # Obtener lista de imágenes (key= asegura que no se desordenen)
     image_files = sorted(
@@ -63,7 +63,7 @@ def main(img_dir, output_vid):
     scene.render.ffmpeg.codec = 'H264'
     scene.render.ffmpeg.constant_rate_factor = 'PERC_LOSSLESS'
     scene.render.ffmpeg.ffmpeg_preset = 'GOOD'
-    scene.render.fps = 2
+    scene.render.fps = fps
 
     scene.frame_start = 0
     scene.frame_end = len(image_files)
@@ -80,9 +80,9 @@ if __name__   == "__main__":
     # Leer rutas desde `timelap.cfg``
     cfg = ConfigParser()
     cfg.read("timelap.cfg")
-    paths = cfg["editor"]
+    ed_cfg = cfg["editor"]
 
-    img_dir = paths["dir_imgs"]
-    output_vid = paths["path_vid"]
+    img_dir = ed_cfg["dir_imgs"]
+    output_vid = ed_cfg["path_vid"]
 
-    main(img_dir, output_vid)
+    main(img_dir, output_vid, int(ed_cfg["fps"]))
